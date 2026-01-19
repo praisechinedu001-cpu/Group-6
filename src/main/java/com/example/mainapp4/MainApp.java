@@ -1,7 +1,4 @@
-package com.example.mainapp4;// =============================================
-// SMART HOME LOAD MONITOR – COMPLETE VERSION
-// Java + JavaFX (Mini Project – Ghana 13A Sockets)
-// =============================================
+package com.example.mainapp4;
 
 import javafx.application.*;
 import javafx.beans.Observable;
@@ -17,13 +14,10 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-
-
-// ---------------- ENUMS ----------------
 enum Status { OK, WARNING, DANGER, SURGE, INVALID }
 enum Priority { ESSENTIAL, NON_ESSENTIAL }
 
-// ---------------- APPLIANCE ----------------
+
 class Appliance {
     String name, location, group;
     double current, prevCurrent, maxCurrent;
@@ -35,16 +29,13 @@ class Appliance {
     }
 }
 
-// ---------------- MAIN APP ----------------
 public class MainApp extends Application {
 
-    // SETTINGS
     double voltage = 230;
     double mainLimit = 40;
     double surgeThreshold = 4;
     double tariff = 1.5;
 
-    // ENERGY
     double energyKWh = 0;
 
     ObservableList<Appliance> appliances = FXCollections.observableArrayList();
@@ -102,8 +93,6 @@ public class MainApp extends Application {
         stage.setTitle("Smart Home Load Monitor");
         stage.show();
     }
-
-    // ---------------- INITIAL DATA ----------------
     void initAppliances(){
         appliances.add(new Appliance("Fridge", "Kitchen", "Kitchen", 2, Priority.ESSENTIAL));
         appliances.add(new Appliance("Microwave", "Kitchen", "Kitchen", 8, Priority.NON_ESSENTIAL));
@@ -134,8 +123,6 @@ public static class Appliance{
         public Status getStatus(){return status;}
 
 }
-
-    // ---------------- TABLE ----------------
     TableView<Appliance> applianceTable(){
         TableView<Appliance> t=new TableView<>(appliances);
         t.getColumns().add(col("Appliance",a -> new SimpleStringProperty(a.getValue().getName())));
@@ -150,8 +137,6 @@ public static class Appliance{
         c.setCellValueFactory(v);
         return c;
     }
-
-    // ---------------- SIMULATION ----------------
     void startSim(Label t,Label p,Label e,Label c,Label s){
         timer=new Timer();
         timer.scheduleAtFixedRate(new TimerTask(){
@@ -216,14 +201,12 @@ public static class Appliance{
         }
 
 
-        // SOCKET GROUP CHECK
         for(String g:groupSum.keySet()){
             double v=groupSum.get(g);
             if(v>13) alert(g+" socket overloaded (>13A)");
             else if(v>=10) alert(g+" socket high load (warning)");
         }
 
-        // HOUSE STATUS
         Status hs;
         if(total>mainLimit){
             hs=Status.DANGER;
@@ -239,8 +222,6 @@ public static class Appliance{
         costLbl.setText(String.format("Cost: %.2f",energyKWh*tariff));
         statusLbl.setText("House Status: "+hs);
     }
-
-    // ---------------- LOAD SHEDDING ----------------
     void loadShedding(double total){
         recommendations.clear();
         List<Appliance> nonEssentials = appliances.stream()
@@ -256,13 +237,9 @@ public static class Appliance{
                     }
                 }
     }
-
-    // ---------------- ALERT ----------------
     void alert(String m){
         alerts.add("["+LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))+" ] "+m);
     }
-
-    // ---------------- SETTINGS ----------------
     void openSettings(){
         Stage s=new Stage();
         TextField v=new TextField(""+voltage);
